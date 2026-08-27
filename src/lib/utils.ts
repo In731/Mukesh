@@ -1,7 +1,23 @@
-import { twMerge } from 'tailwind-merge';
+type ClassValue = string | number | boolean | undefined | null | { [key: string]: any } | ClassValue[];
 
-import { clsx, type ClassValue } from 'clsx';
+export function cn(...inputs: ClassValue[]): string {
+  const classes: string[] = [];
 
-export function cn(...inputs: ClassValue[]) {
-  return twMerge(clsx(inputs));
+  for (const input of inputs) {
+    if (!input) continue;
+    if (typeof input === 'string') {
+      classes.push(input);
+    } else if (typeof input === 'number') {
+      classes.push(String(input));
+    } else if (Array.isArray(input)) {
+      const inner = cn(...input);
+      if (inner) classes.push(inner);
+    } else if (typeof input === 'object') {
+      for (const key in input) {
+        if (input[key]) classes.push(key);
+      }
+    }
+  }
+
+  return classes.join(' ');
 }
