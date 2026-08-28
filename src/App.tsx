@@ -488,26 +488,92 @@ function Ledger() {
   );
 }
 
+const DISPOSABLE_EMAIL_DOMAINS = new Set([
+  'mailinator.com', 'tempmail.com', '10minutemail.com', 'guerrillamail.com',
+  'trashmail.com', 'yopmail.com', 'sharklasers.com', 'getnada.com',
+  'dispostable.com', 'fakemailgenerator.com', 'burnermail.io', 'crazymailing.com',
+  'throwawaymail.com', 'temp-mail.org', '10mail.org', 'generator.email',
+  'inboxbear.com', 'mytemp.email', 'trashmail.net', 'dropmail.me',
+  'mohmal.com', 'emailondeck.com', 'fakeinbox.com', 'trashmail.de',
+  'tempmail.net', 'maildrop.cc', 'getairmail.com', 'binkmail.com',
+  'safetymail.info', 'spam4.me', 'tempmailaddress.com'
+]);
+
+function isValidEmailFormat(email: string): boolean {
+  const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+  if (!emailRegex.test(email.trim())) return false;
+  
+  const domain = email.split('@')[1]?.toLowerCase().trim();
+  if (!domain || !domain.includes('.')) return false;
+  
+  // Reject single letter domain names like a@b.c or test@test
+  const parts = domain.split('.');
+  if (parts.some((p) => p.length < 2)) return false;
+  
+  return true;
+}
+
+function isDisposableEmail(email: string): boolean {
+  const domain = email.split('@')[1]?.toLowerCase().trim();
+  if (!domain) return false;
+  return DISPOSABLE_EMAIL_DOMAINS.has(domain);
+}
+
 function Contact() {
   const { personal } = portfolioData;
   const [status, setStatus] = useState<'idle' | 'submitting' | 'success' | 'error'>('idle');
+  const [emailError, setEmailError] = useState<string>('');
   const [formData, setFormData] = useState({
     name: '',
     email: '',
     subject: '',
     story: '',
+    honeypot: '', // anti-bot field
   });
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    const { name, value } = e.target;
     setFormData((prev) => ({
       ...prev,
-      [e.target.name]: e.target.value,
+      [name]: value,
     }));
+
+    if (name === 'email') {
+      if (!value) {
+        setEmailError('');
+      } else if (!isValidEmailFormat(value)) {
+        setEmailError('Please enter a complete and valid email address (e.g. name@domain.com).');
+      } else if (isDisposableEmail(value)) {
+        setEmailError('Disposable / temporary emails are not accepted. Please use your real work or personal email.');
+      } else {
+        setEmailError('');
+      }
+    }
   };
 
   const submit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
+
+    // 1. Check anti-bot honeypot
+    if (formData.honeypot) {
+      // Silently pretend success for bots
+      setStatus('success');
+      return;
+    }
+
+    // 2. Validate email authenticity
+    if (!isValidEmailFormat(formData.email)) {
+      setEmailError('Please enter a complete, valid email format.');
+      return;
+    }
+
+    if (isDisposableEmail(formData.email)) {
+      setEmailError('Temporary/disposable emails are blocked. Please provide a real email address.');
+      return;
+    }
+
     setStatus('submitting');
+    setEmailError('');
 
     try {
       const response = await fetch(`https://formsubmit.co/ajax/${personal.email}`, {
@@ -527,7 +593,7 @@ function Contact() {
 
       if (response.ok) {
         setStatus('success');
-        setFormData({ name: '', email: '', subject: '', story: '' });
+        setFormData({ name: '', email: '', subject: '', story: '', honeypot: '' });
       } else {
         setStatus('error');
       }
@@ -552,6 +618,17 @@ function Contact() {
           </div>
         </div>
         <form className="contact-form" onSubmit={submit}>
+          {/* Hidden Honeypot for Spam Bots */}
+          <input
+            type="text"
+            name="honeypot"
+            value={formData.honeypot}
+            onChange={handleChange}
+            style={{ display: 'none' }}
+            tabIndex={-1}
+            autoComplete="off"
+          />
+
           <div className="field">
             <label htmlFor="name">Your name</label>
             <input
@@ -576,6 +653,7 @@ function Contact() {
               disabled={status === 'submitting'}
               data-testid="input-email"
             />
+            {emailError && <div className="email-warning-note">⚠️ {emailError}</div>}
           </div>
           <div className="field">
             <label htmlFor="subject">Subject</label>
@@ -606,7 +684,7 @@ function Contact() {
             <button
               className="action primary"
               type="submit"
-              disabled={status === 'submitting'}
+              disabled={status === 'submitting' || Boolean(emailError)}
               data-testid="button-send-letter"
             >
               {status === 'submitting' && 'Dispatching letter...'}
@@ -626,7 +704,7 @@ function Contact() {
               {status === 'submitting' && 'Transmitting dispatch over secure wire...'}
               {status === 'success' && 'Your dispatch is filed and routed to Mukesh’s inbox.'}
               {status === 'error' && 'Failed to send. Please write directly to mukesh.c@ahduni.edu.in'}
-              {status === 'idle' && 'Usually replies within 24 hours'}
+              {status === 'idle' && 'Verified real-time inbox delivery'}
             </span>
           </div>
         </form>

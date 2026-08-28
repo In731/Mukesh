@@ -588,6 +588,14 @@ img { display: block; max-width: 100%; }
 .field label { position: absolute; top: 20px; left: 0; color: var(--ink-faint); font: 9px var(--mono); letter-spacing: .1em; text-transform: uppercase; pointer-events: none; }
 .field input, .field textarea { width: 100%; border: 0; outline: none; padding: 38px 0 14px; background: transparent; color: var(--ink); font: 16px var(--display); resize: vertical; }
 .field input:focus, .field textarea:focus { box-shadow: 0 1px 0 var(--accent); }
+.email-warning-note {
+  margin: -6px 0 10px;
+  font: 11px var(--mono);
+  color: #c93b2b;
+  background: rgba(201, 59, 43, 0.08);
+  padding: 6px 10px;
+  border-left: 2px solid #c93b2b;
+}
 .form-bottom { display: flex; align-items: center; justify-content: space-between; gap: 20px; padding-top: 19px; }
 .response-note { color: var(--ink-faint); font: 10px var(--mono); }
 .response-note.submitted { color: #2e7d32; font-weight: 700; }
