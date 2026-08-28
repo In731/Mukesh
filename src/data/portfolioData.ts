@@ -10,6 +10,8 @@ export interface Exhibit {
   outcomes: string[];
   solo?: boolean;
   award?: string;
+  liveUrl?: string;
+  githubUrl?: string;
 }
 
 export interface LabRow {
@@ -87,6 +89,8 @@ export const portfolioData = {
         "Built embeddable live chat widget with streaming Gemini responses and Upstash Redis caching."
       ],
       solo: true,
+      githubUrl: "https://github.com/In731/NexSupport-Al-_Customer-Support-AI",
+      liveUrl: "https://nexsupport-two.vercel.app/",
     },
     {
       letter: "B",
@@ -103,6 +107,8 @@ export const portfolioData = {
         "Integrated Cloudinary for high-performance direct property image uploads and transformations."
       ],
       solo: true,
+      githubUrl: "https://github.com/In731/PropertyHub",
+      liveUrl: "https://propertyhub-frontend-0yhu.onrender.com/",
     },
     {
       letter: "C",
@@ -120,6 +126,8 @@ export const portfolioData = {
       ],
       solo: true,
       award: "Winner — Website Making Challenge 6.0",
+      githubUrl: "https://github.com/In731/LokiVerse",
+      liveUrl: "https://loki-verse.vercel.app/",
     },
     {
       letter: "D",
@@ -136,6 +144,7 @@ export const portfolioData = {
         "Engineered cross-platform execution with persistent SQLite session history and fast vector indexing."
       ],
       solo: true,
+      githubUrl: "https://github.com/In731/GenAIShell",
     },
     {
       letter: "E",
@@ -152,6 +161,8 @@ export const portfolioData = {
         "Built an interactive map coordinate-picker with custom rule-based timeline validation."
       ],
       solo: true,
+      githubUrl: "https://github.com/In731/Chronos-Elite",
+      liveUrl: "https://chronos-elite-nine.vercel.app/",
     },
   ] as Exhibit[],
 
