@@ -543,7 +543,7 @@ function Contact() {
 
   const handleNativeSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    window.location.href = mailtoUrl;
+    window.open(gmailUrl, '_blank', 'noopener,noreferrer');
   };
 
   return (
@@ -603,18 +603,10 @@ function Contact() {
 
           <div className="form-bottom">
             <button className="action primary" type="submit" data-testid="button-send-letter">
-              Send the letter →
+              Send via Gmail Web ↗
             </button>
             <div className="webmail-launchers">
               <div className="launchers-links">
-                <a
-                  className="webmail-btn gmail-btn"
-                  href={gmailUrl}
-                  target="_blank"
-                  rel="noreferrer"
-                >
-                  Gmail Web ↗
-                </a>
                 <a
                   className="webmail-btn outlook-btn"
                   href={outlookUrl}
@@ -622,6 +614,12 @@ function Contact() {
                   rel="noreferrer"
                 >
                   Outlook Web ↗
+                </a>
+                <a
+                  className="webmail-btn mailto-btn"
+                  href={mailtoUrl}
+                >
+                  Default Mail App ↗
                 </a>
               </div>
             </div>
