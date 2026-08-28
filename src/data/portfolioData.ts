@@ -48,7 +48,7 @@ export interface Certification {
 
 export const portfolioData = {
   personal: {
-    fullName: "Mukesh Nanuram Chaudhari",
+    fullName: "Mukesh Chaudhari",
     shortName: "Mukesh Chaudhari",
     roleTitle: "Software Developer · Full-Stack & AI Systems",
     tagline: "Software Development enthusiast passionate about building AI-driven and modern web solutions.",
@@ -134,6 +134,22 @@ export const portfolioData = {
         "Designed a custom ReAct agent loop with local RAG memory and contextual retrieval.",
         "Implemented strict command sandboxing & safety confirmation guards for safe task automation.",
         "Engineered cross-platform execution with persistent SQLite session history and fast vector indexing."
+      ],
+      solo: true,
+    },
+    {
+      letter: "E",
+      title: "Chronos Elite",
+      category: "Time Travel Product Experience",
+      client: "Independent Project",
+      image: "vncare.png",
+      tags: ["JavaScript (ES6+)", "HTML5 Canvas API", "GSAP / ScrollTrigger", "CSS3 Grid & Flexbox", "Express.js"],
+      date: "Apr 2026",
+      summary: "Built a cinematic, scroll-driven landing page for a fictional time-travel device, featuring a 240-frame canvas scroll animation and a fully interactive 8-step booking wizard.",
+      outcomes: [
+        "Engineered a scroll-synced Canvas rendering engine driving a 240-frame sequence via GSAP ScrollTrigger.",
+        "Architected an 8-step booking wizard in vanilla JS with per-step validation and History API navigation.",
+        "Built an interactive map coordinate-picker with custom rule-based timeline validation."
       ],
       solo: true,
     },
