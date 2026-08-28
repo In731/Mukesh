@@ -588,18 +588,94 @@ img { display: block; max-width: 100%; }
 .field label { position: absolute; top: 20px; left: 0; color: var(--ink-faint); font: 9px var(--mono); letter-spacing: .1em; text-transform: uppercase; pointer-events: none; }
 .field input, .field textarea { width: 100%; border: 0; outline: none; padding: 38px 0 14px; background: transparent; color: var(--ink); font: 16px var(--display); resize: vertical; }
 .field input:focus, .field textarea:focus { box-shadow: 0 1px 0 var(--accent); }
-.email-warning-note {
-  margin: -6px 0 10px;
-  font: 11px var(--mono);
-  color: #c93b2b;
-  background: rgba(201, 59, 43, 0.08);
-  padding: 6px 10px;
-  border-left: 2px solid #c93b2b;
+.auth-dispatch-badge {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  background: var(--field);
+  border: 1px solid var(--ink);
+  padding: 14px 16px;
+  margin: 24px 0 32px;
+  box-shadow: 3px 3px 0 rgba(22, 20, 15, .1);
 }
-.form-bottom { display: flex; align-items: center; justify-content: space-between; gap: 20px; padding-top: 19px; }
-.response-note { color: var(--ink-faint); font: 10px var(--mono); }
-.response-note.submitted { color: #2e7d32; font-weight: 700; }
-.response-note.error { color: #d93829; font-weight: 600; }
+.auth-badge-icon { font-size: 20px; line-height: 1; }
+.auth-dispatch-badge strong {
+  display: block;
+  font: 700 11px var(--mono);
+  color: var(--accent);
+  text-transform: uppercase;
+  letter-spacing: .08em;
+  margin-bottom: 4px;
+}
+.auth-dispatch-badge p {
+  margin: 0 !important;
+  font: 12px/1.5 var(--display) !important;
+  color: #575247 !important;
+}
+
+.dispatch-actions-box {
+  padding-top: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+.dispatch-primary-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 14px;
+}
+.secondary-copy-btn {
+  border: 1px solid var(--ink);
+  background: var(--field);
+  color: var(--ink);
+  padding: 11px 18px;
+  font: 700 11px var(--mono);
+  text-transform: uppercase;
+  letter-spacing: .08em;
+  cursor: pointer;
+  transition: all .2s ease;
+}
+.secondary-copy-btn:hover {
+  background: var(--ink);
+  color: var(--paper);
+}
+
+.webmail-launchers {
+  border-top: 1px dashed var(--rule);
+  padding-top: 16px;
+}
+.launchers-label {
+  display: block;
+  font: 700 9px var(--mono);
+  text-transform: uppercase;
+  letter-spacing: .1em;
+  color: var(--ink-faint);
+  margin-bottom: 10px;
+}
+.launchers-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+.webmail-btn {
+  display: inline-flex;
+  align-items: center;
+  font: 600 10px var(--mono);
+  text-transform: uppercase;
+  letter-spacing: .08em;
+  padding: 6px 12px;
+  border-radius: 2px;
+  border: 1px solid rgba(22, 20, 15, .2);
+  background: var(--paper);
+  color: var(--ink);
+  transition: all .2s ease;
+}
+.webmail-btn:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+  transform: translateY(-1px);
+}
 .direct-line { margin-top: 46px; border-top: 1px solid var(--ink); padding-top: 18px; }
 .direct-line label { display: block; color: var(--ink-faint); font: 9px var(--mono); text-transform: uppercase; letter-spacing: .1em; }
 .direct-line a { display: inline-block; margin-top: 10px; border-bottom: 1px solid var(--accent); color: var(--accent); font: 20px var(--display); }

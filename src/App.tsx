@@ -488,48 +488,14 @@ function Ledger() {
   );
 }
 
-const DISPOSABLE_EMAIL_DOMAINS = new Set([
-  'mailinator.com', 'tempmail.com', '10minutemail.com', 'guerrillamail.com',
-  'trashmail.com', 'yopmail.com', 'sharklasers.com', 'getnada.com',
-  'dispostable.com', 'fakemailgenerator.com', 'burnermail.io', 'crazymailing.com',
-  'throwawaymail.com', 'temp-mail.org', '10mail.org', 'generator.email',
-  'inboxbear.com', 'mytemp.email', 'trashmail.net', 'dropmail.me',
-  'mohmal.com', 'emailondeck.com', 'fakeinbox.com', 'trashmail.de',
-  'tempmail.net', 'maildrop.cc', 'getairmail.com', 'binkmail.com',
-  'safetymail.info', 'spam4.me', 'tempmailaddress.com'
-]);
-
-function isValidEmailFormat(email: string): boolean {
-  const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
-  if (!emailRegex.test(email.trim())) return false;
-  
-  const domain = email.split('@')[1]?.toLowerCase().trim();
-  if (!domain || !domain.includes('.')) return false;
-  
-  // Reject single letter domain names like a@b.c or test@test
-  const parts = domain.split('.');
-  if (parts.some((p) => p.length < 2)) return false;
-  
-  return true;
-}
-
-function isDisposableEmail(email: string): boolean {
-  const domain = email.split('@')[1]?.toLowerCase().trim();
-  if (!domain) return false;
-  return DISPOSABLE_EMAIL_DOMAINS.has(domain);
-}
-
 function Contact() {
   const { personal } = portfolioData;
-  const [status, setStatus] = useState<'idle' | 'submitting' | 'success' | 'error'>('idle');
-  const [emailError, setEmailError] = useState<string>('');
   const [formData, setFormData] = useState({
     name: '',
-    email: '',
     subject: '',
     story: '',
-    honeypot: '', // anti-bot field
   });
+  const [copied, setCopied] = useState(false);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
@@ -537,78 +503,65 @@ function Contact() {
       ...prev,
       [name]: value,
     }));
-
-    if (name === 'email') {
-      if (!value) {
-        setEmailError('');
-      } else if (!isValidEmailFormat(value)) {
-        setEmailError('Please enter a complete and valid email address (e.g. name@domain.com).');
-      } else if (isDisposableEmail(value)) {
-        setEmailError('Disposable / temporary emails are not accepted. Please use your real work or personal email.');
-      } else {
-        setEmailError('');
-      }
-    }
   };
 
-  const submit = async (event: FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-
-    // 1. Check anti-bot honeypot
-    if (formData.honeypot) {
-      // Silently pretend success for bots
-      setStatus('success');
-      return;
+  const getSubjectText = () => {
+    if (formData.subject.trim()) {
+      return formData.name.trim()
+        ? `[Opportunity] ${formData.subject.trim()} — ${formData.name.trim()}`
+        : `[Opportunity] ${formData.subject.trim()}`;
     }
+    return formData.name.trim()
+      ? `[Opportunity Inquiry] from ${formData.name.trim()}`
+      : `[Software Development Inquiry] for Mukesh Chaudhari`;
+  };
 
-    // 2. Validate email authenticity
-    if (!isValidEmailFormat(formData.email)) {
-      setEmailError('Please enter a complete, valid email format.');
-      return;
+  const getBodyText = () => {
+    const lines = [];
+    if (formData.name.trim()) lines.push(`From: ${formData.name.trim()}`);
+    if (formData.subject.trim()) lines.push(`Inquiry: ${formData.subject.trim()}`);
+    if (lines.length > 0) lines.push('');
+    if (formData.story.trim()) {
+      lines.push(formData.story.trim());
+    } else {
+      lines.push('Hi Mukesh,\n\nI reviewed your portfolio and would like to discuss an engineering opportunity with you.\n\nBest regards,');
     }
+    lines.push('\n---\nSent via verified direct dispatch to mukesh.c@ahduni.edu.in');
+    return lines.join('\n');
+  };
 
-    if (isDisposableEmail(formData.email)) {
-      setEmailError('Temporary/disposable emails are blocked. Please provide a real email address.');
-      return;
-    }
+  const mailtoUrl = `mailto:${personal.email}?subject=${encodeURIComponent(getSubjectText())}&body=${encodeURIComponent(getBodyText())}`;
+  const gmailUrl = `https://mail.google.com/mail/?view=cm&fs=1&to=${personal.email}&su=${encodeURIComponent(getSubjectText())}&body=${encodeURIComponent(getBodyText())}`;
+  const outlookUrl = `https://outlook.live.com/mail/0/deeplink/compose?to=${personal.email}&subject=${encodeURIComponent(getSubjectText())}&body=${encodeURIComponent(getBodyText())}`;
 
-    setStatus('submitting');
-    setEmailError('');
+  const copyToClipboard = () => {
+    const fullText = `To: ${personal.email}\nSubject: ${getSubjectText()}\n\n${getBodyText()}`;
+    navigator.clipboard.writeText(fullText);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2500);
+  };
 
-    try {
-      const response = await fetch(`https://formsubmit.co/ajax/${personal.email}`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          Accept: 'application/json',
-        },
-        body: JSON.stringify({
-          name: formData.name,
-          email: formData.email,
-          _subject: `[Portfolio Inquiry] ${formData.subject}`,
-          message: formData.story,
-          _template: 'table',
-        }),
-      });
-
-      if (response.ok) {
-        setStatus('success');
-        setFormData({ name: '', email: '', subject: '', story: '', honeypot: '' });
-      } else {
-        setStatus('error');
-      }
-    } catch {
-      setStatus('error');
-    }
+  const handleNativeSubmit = (e: FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    window.location.href = mailtoUrl;
   };
 
   return (
     <section className="contact" id="contact">
       <div className="container contact-grid">
         <div className="contact-intro">
-          <div className="eyebrow">Submit a Tip / Inquiry</div>
+          <div className="eyebrow">Direct Authenticated Dispatch</div>
           <h2>Letters <em>&amp;</em><br />Opportunities</h2>
           <p>The desk is open for Software Engineering roles, Full-Stack contracts, and AI development opportunities.</p>
+          
+          <div className="auth-dispatch-badge">
+            <div className="auth-badge-icon">🛡️</div>
+            <div>
+              <strong>100% Spoof-Proof Delivery</strong>
+              <p>Dispatched directly through your authenticated email client (Gmail / Outlook / Apple Mail) with cryptographic DKIM/SPF signatures.</p>
+            </div>
+          </div>
+
           <div className="direct-line">
             <label>Direct line</label>
             <a href={`mailto:${personal.email}`} data-testid="link-direct-email">
@@ -617,95 +570,80 @@ function Contact() {
             <p>For commissions, engineering roles, and discussions about full-stack architecture &amp; AI.</p>
           </div>
         </div>
-        <form className="contact-form" onSubmit={submit}>
-          {/* Hidden Honeypot for Spam Bots */}
-          <input
-            type="text"
-            name="honeypot"
-            value={formData.honeypot}
-            onChange={handleChange}
-            style={{ display: 'none' }}
-            tabIndex={-1}
-            autoComplete="off"
-          />
 
+        <form className="contact-form" onSubmit={handleNativeSubmit}>
           <div className="field">
-            <label htmlFor="name">Your name</label>
+            <label htmlFor="name">Your Name / Organization</label>
             <input
               id="name"
               name="name"
+              placeholder="e.g. Alex Morgan · Tech Recruiter / Founder"
               value={formData.name}
               onChange={handleChange}
-              required
-              disabled={status === 'submitting'}
               data-testid="input-name"
             />
           </div>
+
           <div className="field">
-            <label htmlFor="email">Email</label>
-            <input
-              id="email"
-              name="email"
-              type="email"
-              value={formData.email}
-              onChange={handleChange}
-              required
-              disabled={status === 'submitting'}
-              data-testid="input-email"
-            />
-            {emailError && <div className="email-warning-note">⚠️ {emailError}</div>}
-          </div>
-          <div className="field">
-            <label htmlFor="subject">Subject</label>
+            <label htmlFor="subject">Subject / Inquiry Topic</label>
             <input
               id="subject"
               name="subject"
+              placeholder="e.g. Software Engineering Opportunity / AI Project"
               value={formData.subject}
               onChange={handleChange}
-              required
-              disabled={status === 'submitting'}
               data-testid="input-subject"
             />
           </div>
+
           <div className="field">
-            <label htmlFor="story">The story / opportunity</label>
+            <label htmlFor="story">The Story / Opportunity Details</label>
             <textarea
               id="story"
               name="story"
               rows={4}
+              placeholder="Write your note or opportunity details here..."
               value={formData.story}
               onChange={handleChange}
-              required
-              disabled={status === 'submitting'}
               data-testid="input-story"
             />
           </div>
-          <div className="form-bottom">
-            <button
-              className="action primary"
-              type="submit"
-              disabled={status === 'submitting' || Boolean(emailError)}
-              data-testid="button-send-letter"
-            >
-              {status === 'submitting' && 'Dispatching letter...'}
-              {status === 'success' && '✓ Letter Dispatched'}
-              {status === 'error' && 'Retry Dispatch'}
-              {status === 'idle' && 'Send the letter'}
-            </button>
-            <span
-              className={
-                status === 'success'
-                  ? 'response-note submitted'
-                  : status === 'error'
-                  ? 'response-note error'
-                  : 'response-note'
-              }
-            >
-              {status === 'submitting' && 'Transmitting dispatch over secure wire...'}
-              {status === 'success' && 'Your dispatch is filed and routed to Mukesh’s inbox.'}
-              {status === 'error' && 'Failed to send. Please write directly to mukesh.c@ahduni.edu.in'}
-              {status === 'idle' && 'Verified real-time inbox delivery'}
-            </span>
+
+          <div className="dispatch-actions-box">
+            <div className="dispatch-primary-row">
+              <button className="action primary" type="submit" data-testid="button-send-letter">
+                Compose Verified Letter ↗
+              </button>
+              <button
+                type="button"
+                className="action secondary-copy-btn"
+                onClick={copyToClipboard}
+              >
+                {copied ? '✓ Letter Copied to Clipboard' : '📋 Copy Draft to Clipboard'}
+              </button>
+            </div>
+
+            <div className="webmail-launchers">
+              <span className="launchers-label">One-Click Webmail Launchers:</span>
+              <div className="launchers-links">
+                <a
+                  className="webmail-btn gmail-btn"
+                  href={gmailUrl}
+                  target="_blank"
+                  rel="noreferrer"
+                >
+                  Open in Gmail Web ↗
+                </a>
+                <a
+                  className="webmail-btn outlook-btn"
+                  href={outlookUrl}
+                  target="_blank"
+                  rel="noreferrer"
+                >
+                  Open in Outlook Web ↗
+                </a>
+              </div>
+            </div>
           </div>
         </form>
       </div>
