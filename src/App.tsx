@@ -495,7 +495,6 @@ function Contact() {
     subject: '',
     story: '',
   });
-  const [copied, setCopied] = useState(false);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
@@ -534,18 +533,6 @@ function Contact() {
   const gmailUrl = `https://mail.google.com/mail/?view=cm&fs=1&to=${personal.email}&su=${encodeURIComponent(getSubjectText())}&body=${encodeURIComponent(getBodyText())}`;
   const outlookUrl = `https://outlook.live.com/mail/0/deeplink/compose?to=${personal.email}&subject=${encodeURIComponent(getSubjectText())}&body=${encodeURIComponent(getBodyText())}`;
 
-  const copyToClipboard = () => {
-    const fullText = `To: ${personal.email}\nSubject: ${getSubjectText()}\n\n${getBodyText()}`;
-    navigator.clipboard.writeText(fullText);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2500);
-  };
-
-  const handleNativeSubmit = (e: FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    window.open(gmailUrl, '_blank', 'noopener,noreferrer');
-  };
-
   return (
     <section className="contact" id="contact">
       <div className="container contact-grid">
@@ -556,14 +543,19 @@ function Contact() {
 
           <div className="direct-line">
             <label>Direct line</label>
-            <a href={`mailto:${personal.email}`} data-testid="link-direct-email">
-              {personal.email}
+            <a
+              href={`https://mail.google.com/mail/?view=cm&fs=1&to=${personal.email}`}
+              target="_blank"
+              rel="noreferrer"
+              data-testid="link-direct-email"
+            >
+              {personal.email} ↗
             </a>
-            <p>For commissions, engineering roles, and discussions about full-stack architecture &amp; AI.</p>
+            <p>Opens directly in Gmail Web for commissions, engineering roles, and architecture discussions.</p>
           </div>
         </div>
 
-        <form className="contact-form" onSubmit={handleNativeSubmit}>
+        <form className="contact-form" onSubmit={(e) => { e.preventDefault(); window.open(gmailUrl, '_blank', 'noopener,noreferrer'); }}>
           <div className="field">
             <label htmlFor="name">Your Name / Organization</label>
             <input
@@ -602,9 +594,15 @@ function Contact() {
           </div>
 
           <div className="form-bottom">
-            <button className="action primary" type="submit" data-testid="button-send-letter">
-              Send via Gmail Web ↗
-            </button>
+            <a
+              className="action primary"
+              href={gmailUrl}
+              target="_blank"
+              rel="noreferrer"
+              data-testid="button-open-gmail"
+            >
+              Open in Gmail Web ↗
+            </a>
             <div className="webmail-launchers">
               <div className="launchers-links">
                 <a
@@ -614,12 +612,6 @@ function Contact() {
                   rel="noreferrer"
                 >
                   Outlook Web ↗
-                </a>
-                <a
-                  className="webmail-btn mailto-btn"
-                  href={mailtoUrl}
-                >
-                  Default Mail App ↗
                 </a>
               </div>
             </div>
