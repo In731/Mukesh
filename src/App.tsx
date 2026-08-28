@@ -550,17 +550,9 @@ function Contact() {
     <section className="contact" id="contact">
       <div className="container contact-grid">
         <div className="contact-intro">
-          <div className="eyebrow">Direct Authenticated Dispatch</div>
+          <div className="eyebrow">Submit an Inquiry</div>
           <h2>Letters <em>&amp;</em><br />Opportunities</h2>
           <p>The desk is open for Software Engineering roles, Full-Stack contracts, and AI development opportunities.</p>
-          
-          <div className="auth-dispatch-badge">
-            <div className="auth-badge-icon">🛡️</div>
-            <div>
-              <strong>100% Spoof-Proof Delivery</strong>
-              <p>Dispatched directly through your authenticated email client (Gmail / Outlook / Apple Mail) with cryptographic DKIM/SPF signatures.</p>
-            </div>
-          </div>
 
           <div className="direct-line">
             <label>Direct line</label>
@@ -609,22 +601,11 @@ function Contact() {
             />
           </div>
 
-          <div className="dispatch-actions-box">
-            <div className="dispatch-primary-row">
-              <button className="action primary" type="submit" data-testid="button-send-letter">
-                Compose Verified Letter ↗
-              </button>
-              <button
-                type="button"
-                className="action secondary-copy-btn"
-                onClick={copyToClipboard}
-              >
-                {copied ? '✓ Letter Copied to Clipboard' : '📋 Copy Draft to Clipboard'}
-              </button>
-            </div>
-
+          <div className="form-bottom">
+            <button className="action primary" type="submit" data-testid="button-send-letter">
+              Send the letter →
+            </button>
             <div className="webmail-launchers">
-              <span className="launchers-label">One-Click Webmail Launchers:</span>
               <div className="launchers-links">
                 <a
                   className="webmail-btn gmail-btn"
@@ -632,7 +613,7 @@ function Contact() {
                   target="_blank"
                   rel="noreferrer"
                 >
-                  Open in Gmail Web ↗
+                  Gmail Web ↗
                 </a>
                 <a
                   className="webmail-btn outlook-btn"
@@ -640,7 +621,7 @@ function Contact() {
                   target="_blank"
                   rel="noreferrer"
                 >
-                  Open in Outlook Web ↗
+                  Outlook Web ↗
                 </a>
               </div>
             </div>
