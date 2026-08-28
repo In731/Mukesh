@@ -490,10 +490,50 @@ function Ledger() {
 
 function Contact() {
   const { personal } = portfolioData;
-  const [sent, setSent] = useState(false);
-  const submit = (event: FormEvent<HTMLFormElement>) => {
+  const [status, setStatus] = useState<'idle' | 'submitting' | 'success' | 'error'>('idle');
+  const [formData, setFormData] = useState({
+    name: '',
+    email: '',
+    subject: '',
+    story: '',
+  });
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    setFormData((prev) => ({
+      ...prev,
+      [e.target.name]: e.target.value,
+    }));
+  };
+
+  const submit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    setSent(true);
+    setStatus('submitting');
+
+    try {
+      const response = await fetch(`https://formsubmit.co/ajax/${personal.email}`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Accept: 'application/json',
+        },
+        body: JSON.stringify({
+          name: formData.name,
+          email: formData.email,
+          _subject: `[Portfolio Inquiry] ${formData.subject}`,
+          message: formData.story,
+          _template: 'table',
+        }),
+      });
+
+      if (response.ok) {
+        setStatus('success');
+        setFormData({ name: '', email: '', subject: '', story: '' });
+      } else {
+        setStatus('error');
+      }
+    } catch {
+      setStatus('error');
+    }
   };
 
   return (
@@ -514,26 +554,79 @@ function Contact() {
         <form className="contact-form" onSubmit={submit}>
           <div className="field">
             <label htmlFor="name">Your name</label>
-            <input id="name" name="name" required data-testid="input-name" />
+            <input
+              id="name"
+              name="name"
+              value={formData.name}
+              onChange={handleChange}
+              required
+              disabled={status === 'submitting'}
+              data-testid="input-name"
+            />
           </div>
           <div className="field">
             <label htmlFor="email">Email</label>
-            <input id="email" name="email" type="email" required data-testid="input-email" />
+            <input
+              id="email"
+              name="email"
+              type="email"
+              value={formData.email}
+              onChange={handleChange}
+              required
+              disabled={status === 'submitting'}
+              data-testid="input-email"
+            />
           </div>
           <div className="field">
             <label htmlFor="subject">Subject</label>
-            <input id="subject" name="subject" required data-testid="input-subject" />
+            <input
+              id="subject"
+              name="subject"
+              value={formData.subject}
+              onChange={handleChange}
+              required
+              disabled={status === 'submitting'}
+              data-testid="input-subject"
+            />
           </div>
           <div className="field">
             <label htmlFor="story">The story / opportunity</label>
-            <textarea id="story" name="story" rows={4} required data-testid="input-story" />
+            <textarea
+              id="story"
+              name="story"
+              rows={4}
+              value={formData.story}
+              onChange={handleChange}
+              required
+              disabled={status === 'submitting'}
+              data-testid="input-story"
+            />
           </div>
           <div className="form-bottom">
-            <button className="action primary" type="submit" data-testid="button-send-letter">
-              {sent ? 'Letter filed' : 'Send the letter'}
+            <button
+              className="action primary"
+              type="submit"
+              disabled={status === 'submitting'}
+              data-testid="button-send-letter"
+            >
+              {status === 'submitting' && 'Dispatching letter...'}
+              {status === 'success' && '✓ Letter Dispatched'}
+              {status === 'error' && 'Retry Dispatch'}
+              {status === 'idle' && 'Send the letter'}
             </button>
-            <span className={sent ? 'response-note submitted' : 'response-note'}>
-              {sent ? 'Your note is in the archive.' : 'Usually replies within 24 hours'}
+            <span
+              className={
+                status === 'success'
+                  ? 'response-note submitted'
+                  : status === 'error'
+                  ? 'response-note error'
+                  : 'response-note'
+              }
+            >
+              {status === 'submitting' && 'Transmitting dispatch over secure wire...'}
+              {status === 'success' && 'Your dispatch is filed and routed to Mukesh’s inbox.'}
+              {status === 'error' && 'Failed to send. Please write directly to mukesh.c@ahduni.edu.in'}
+              {status === 'idle' && 'Usually replies within 24 hours'}
             </span>
           </div>
         </form>
