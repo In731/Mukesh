@@ -164,6 +164,22 @@ export const portfolioData = {
       githubUrl: "https://github.com/In731/Chronos-Elite",
       liveUrl: "https://chronos-elite-nine.vercel.app/",
     },
+    {
+      letter: "F",
+      title: "Restro-IQ",
+      category: "AI Restaurant Revenue & Ordering Platform",
+      client: "Independent Project",
+      image: "Restro-IQ.png",
+      tags: ["React", "Node.js", "Express.js", "MongoDB Atlas", "Meta-LLaMA 3 (70B)", "Sarvam AI (TTS)", "Twilio Voice API", "Fuse.js", "JWT", "Nodemailer"],
+      date: "May — Jun 2026",
+      summary: "Architected a restaurant revenue intelligence platform featuring multi-modal AI ordering (chat, voice, Twilio phone calls) and real-time predictive pricing analytics.",
+      outcomes: [
+        "Developed BCG and association mining engines for automated combo pricing.",
+        "Engineered multi-turn fuzzy NLP parsing across web and telephony channels."
+      ],
+      solo: true,
+      githubUrl: "https://github.com/In731/Restro-IQ",
+    },
   ] as Exhibit[],
 
   achievements: [

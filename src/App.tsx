@@ -170,7 +170,7 @@ function Works() {
             <div className="eyebrow">The Evidence · Case Files</div>
             <h2>Selected <em>Works</em></h2>
           </div>
-          <p className="section-caption">Exhibits A – E · Entered 2025 – 2026</p>
+          <p className="section-caption">Exhibits A – {exhibits[exhibits.length - 1]?.letter || 'F'} · Entered 2025 – 2026</p>
         </div>
         <div className="exhibits-grid">
           {exhibits.map((exhibit) => (
